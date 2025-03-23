@@ -1,0 +1,109 @@
+--subquery
+
+SELECT 
+(select count(*) FROM patients where gender = 'M') as total_male,
+(select count(*) FROM patients where gender = 'F') as total_female;
+
+--IN operator
+
+select first_name,last_name,allergies 
+from patients
+where allergies IN ('Morphine','Penicillin') 
+order by allergies asc,first_name,last_name;
+
+
+--group by and having clause
+
+select patient_id, diagnosis 
+from admissions
+group by patient_id, diagnosis
+having count(*) > 1; 
+
+--group by and order by
+
+select city, count(patient_id) as total_patients
+from patients
+group by city
+order by total_patients desc, city asc;
+
+--UNION ALL
+
+select first_name,last_name, "patient" as role from patients
+UNION all
+Select first_name,last_name, "doctor" as role from doctors;
+
+--where, group by and order by
+
+select allergies, count(patient_id) as total_patients
+from patients 
+where allergies is not NULL
+group by allergies
+order by count(patient_id) desc;
+
+-- Year function
+
+SELECT first_name,last_name,birth_date
+FROM patients
+where Year(birth_date) in 
+(1970,1971,1972,1973,1974,1975,1976,1977,1978,1979)
+order by birth_date;
+
+
+--String function
+
+select concat(UPPER(last_name),",",lower(first_name))
+from patients
+order by first_name desc;
+
+--SUM aggregate function
+
+select province_id, sum(height) as sum_of_height
+from patients
+group by province_id
+having sum_of_height >= 7000;
+
+
+--MIN and MAX aggregate function
+
+select (Max(weight)-Min(weight)) as weight_diff 
+from patients 
+where last_name='Maroni';
+
+--Day function
+
+select day(admission_date) as day_of_month,
+count(*) as total_patients
+from admissions
+group by day_of_month
+order by total_patients desc;
+
+--select * from table 
+--using limit function
+
+select * from admissions
+where patient_id = 542 
+order by admission_date desc limit 1;
+
+--comparision operator
+
+select patient_id,attending_doctor_id,diagnosis
+from admissions
+where(patient_id % 2!= 0 and attending_doctor_id in (1,5,19))
+or 
+(attending_doctor_id like '%2%' and len(patient_id)=3);
+
+
+-- join  query
+
+select d.first_name,d.last_name,count(a.patient_id) as total_admissions
+from doctors d join admissions a 
+where a.attending_doctor_id = d.doctor_id
+group by a.attending_doctor_id
+;
+
+
+
+
+
+
+ 
